@@ -14,17 +14,14 @@ const AppliedScholarships = ({ appliedScholarships }) => {
             className="bg-gray-800 shadow-lg rounded-2xl p-7 flex flex-col justify-between h-full"
           >
             <div className="space-y-5">
-              {/* Scholarship Title */}
               <h3 className="text-2xl font-semibold text-green-300">
                 {application.scholarship.title}
               </h3>
 
-              {/* Scholarship Description */}
               <p className="text-lg text-gray-300">
                 {application.scholarship.description}
               </p>
 
-              {/* Scholarship Details */}
               <div className="text-lg text-gray-400 space-y-2">
                 <p>
                   <strong className="text-green-400">Eligibility:</strong>{" "}
@@ -43,7 +40,6 @@ const AppliedScholarships = ({ appliedScholarships }) => {
                 </div>
               </div>
 
-              {/* Application Status */}
               <div className="flex justify-center">
                 <span
                   className={`px-4 py-2 text-lg font-semibold rounded-xl ${
@@ -59,7 +55,6 @@ const AppliedScholarships = ({ appliedScholarships }) => {
               </div>
             </div>
 
-            {/* Document Links */}
             <div className="mt-6 space-y-3 border-t border-gray-700 pt-4">
               <a
                 href={application.transcript}
@@ -79,7 +74,6 @@ const AppliedScholarships = ({ appliedScholarships }) => {
               </a>
             </div>
 
-            {/* Submission Date */}
             <div className="mt-4 text-sm text-gray-500 text-center">
               🕒 Submitted on:{" "}
               {new Date(application.submitted_at).toLocaleString()}

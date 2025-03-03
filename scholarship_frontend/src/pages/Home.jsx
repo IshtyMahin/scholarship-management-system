@@ -29,7 +29,7 @@ const Home = () => {
 
       <div className="flex-grow flex items-center justify-center text-center py-12 md:py-20">
         <div className="max-w-4xl px-6">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-6 leading-tight text-green-600">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-green-600">
             Scholarship Management System
           </h1>
           <p className="py-4 text-lg text-gray-600 md:text-xl">

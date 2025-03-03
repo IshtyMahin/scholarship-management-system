@@ -5,7 +5,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-
+from django.db import IntegrityError
+from .utils import send_response
 
 class ScholarshipViewSet(viewsets.ModelViewSet):
     queryset = Scholarship.objects.all()
@@ -18,6 +19,29 @@ class ScholarshipViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
 
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            return send_response(True, "Scholarship retrieved successfully!", data=serializer.data)
+        except Exception as e:
+            return send_response(False, str(e), status_code=404)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return send_response(True, "Scholarships retrieved successfully!", data=serializer.data)
+        except Exception as e:
+            return send_response(False, str(e), status_code=400)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return send_response(True, "Scholarship deleted successfully!")
+        except Exception as e:
+            return send_response(False, str(e), status_code=400)
 
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
@@ -39,52 +63,83 @@ class ApplicationViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            return send_response(True, "Application retrieved successfully!", data=serializer.data)
+        except Exception as e:
+            return send_response(False, str(e), status_code=404)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            return send_response(True, "Applications retrieved successfully!", data=serializer.data)
+        except Exception as e:
+            return send_response(False, str(e), status_code=400)
+
     def perform_update(self, serializer):
         if not self.request.user.is_staff:
-            raise permissions.PermissionDenied("You do not have permission to update the status.")
+            return send_response(False, "You do not have permission to update the status.", status_code=403)
 
         status = self.request.data.get('status', None)
         print(status)
         if not status:
-            raise ValidationError("Status is required.")
+            return send_response(False, "Status is required.", status_code=400)
 
         serializer.instance.status = status
-        print(serializer)
         serializer.save()
 
-        return Response({
-            'message': 'Application status updated successfully!',
-            'data': serializer.data
-        }, status=200)
+        return send_response(True, "Application status updated successfully!", data=serializer.data)
+
 
     def perform_create(self, serializer):
-    
-
         scholarship_id = self.request.data.get("scholarship")
-
+        
         if not scholarship_id:
-            raise ValidationError("Scholarship ID is required")
+            return send_response(False,
+               "Scholarship ID is required",
+                status_code=400,
+            )
 
         try:
             scholarship = Scholarship.objects.get(id=scholarship_id)
         except Scholarship.DoesNotExist:
-            raise ValidationError("Scholarship not found")
+            return send_response(False,
+               "Scholarship not found",
+                status_code=404,
+            )
 
-        serializer.save(
-            student=self.request.user,
-            scholarship=scholarship,
-            transcript=self.request.FILES.get("transcript"),
-            recommendation_letter=self.request.FILES.get("recommendation_letter")
-        )
+        if Application.objects.filter(student=self.request.user, scholarship=scholarship).exists():
+            return send_response(False,"You have already applied for this scholarship.",
+                status_code=400,
+            )
 
-        # self.send_application_email(serializer.instance)
+        transcript = self.request.FILES.get("transcript")
+        recommendation_letter = self.request.FILES.get("recommendation_letter")
+        if not transcript or not recommendation_letter:
+            return send_response(False,
+              "Both transcript and recommendation letter are required.",
+                status_code=400,
+            )
 
-        return Response({
-            'message': 'Application submitted successfully!',
-            'data': serializer.data
-        }, status=200)
+        try:
+            application = serializer.save(
+                student=self.request.user,
+                scholarship=scholarship,
+                transcript=transcript,
+                recommendation_letter=recommendation_letter,
+            )
+            return send_response(True, "Application submitted successfully!", serializer.data,
+            status_code=201,)
+        except IntegrityError:
+            return send_response(False, "You have already applied for this scholarship.",
+                status_code=400,
+            )
 
-  
+       
+
     def send_application_email(self, application):
         subject = f"Application Submitted for {application.scholarship.title}"
         message = (
@@ -100,3 +155,11 @@ class ApplicationViewSet(viewsets.ModelViewSet):
             [application.student.email],
             fail_silently=False,
         )
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return send_response(True, "Application deleted successfully!")
+        except Exception as e:
+            return send_response(False, str(e), status_code=400)

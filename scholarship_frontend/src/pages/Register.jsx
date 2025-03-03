@@ -21,13 +21,18 @@ const Register = () => {
     setLoading(true); 
 
     try {
-      const response = await signUp(userData);
-      if (response.success) {
-        setSuccess(response.success);
-        navigate("/login"); 
+      const response = await signUp(userData,navigate);
+
+      
+      if(response?.data?.success){
+          setSuccess(response.data.message);
+      }else{
+        setError(
+          response.data.message
+        );
       }
+      
     } catch (error) {
-      console.error(error);
       setError(
         error.response?.data?.error || "Registration failed. Please try again."
       );
@@ -37,10 +42,10 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-      <div className="card w-full max-w-md bg-white shadow-xl rounded-lg overflow-hidden">
+    <div className="min-h-screen bg-gray-800 flex items-center justify-center py-12 px-4">
+      <div className="card w-full max-w-md bg-gray-900 shadow-xl rounded-lg overflow-hidden">
         <div className="card-body p-8">
-          <h2 className="card-title text-3xl font-semibold text-gray-800 mb-6 text-center">
+          <h2 className="card-title text-3xl font-semibold  mb-6 text-center text-green-600">
             Register
           </h2>
           {success && (
@@ -51,7 +56,7 @@ const Register = () => {
           )}
           <form onSubmit={handleSubmit}>
             <div className="form-control mb-6">
-              <label className="label text-gray-700 mb-2 block">Username</label>
+              <label className="label text-gray-400 mb-2 block">Username</label>
               <input
                 type="text"
                 placeholder="Enter your username"
@@ -64,7 +69,7 @@ const Register = () => {
               />
             </div>
             <div className="form-control mb-6">
-              <label className="label text-gray-700 mb-2 block">Email</label>
+              <label className="label text-gray-400 mb-2 block">Email</label>
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -77,7 +82,7 @@ const Register = () => {
               />
             </div>
             <div className="form-control mb-6">
-              <label className="label text-gray-700 mb-2 block">Password</label>
+              <label className="label text-gray-400 mb-2 block">Password</label>
               <input
                 type="password"
                 placeholder="Enter your password"

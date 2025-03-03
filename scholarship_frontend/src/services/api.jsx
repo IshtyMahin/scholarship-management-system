@@ -52,11 +52,12 @@ export const login = async (userData) => {
   const response = await api.post("/login/", userData);
   localStorage.setItem("access_token", response.data.access);
   localStorage.setItem("refresh_token", response.data.refresh);
-  return response.data;
+  return response;
 };
 
 export const getScholarships = async () => {
   const response = await api.get("/scholarships/");
+  
   return response.data;
 };
 
@@ -71,17 +72,21 @@ export const createScholarship = async (scholarshipData) => {
 };
 
 export const updateScholarship = async (id, scholarshipData) => {
-  const response = await api.put(`/scholarships/${id}/`, scholarshipData);
-  return response.data;
+  const response = await api.patch(`/scholarships/${id}/`, scholarshipData);
+  console.log(response);
+  
+  return response;
 };
 
 export const deleteScholarship = async (id) => {
   const response = await api.delete(`/scholarships/${id}/`);
+  
   return response.data;
 };
 
 export const getApplications = async () => {
   const response = await api.get("/applications/");
+  
   return response.data;
 };
 
@@ -96,6 +101,8 @@ export const createApplication = async (formData) => {
       "Content-Type": "multipart/form-data",
     },
   });
+  console.log(response);
+
   return response.data;
 };
 
@@ -109,9 +116,8 @@ export const updateApplicationStatus = async (applicationId, newStatus) => {
           "Content-Type": "application/json", 
         },
       }
-    );
-    console.log("Status updated successfully:", response.data);
-    return response.data; 
+    ); 
+    return response; 
   } catch (error) {
     console.error("Error updating status:", error);
     throw error; 

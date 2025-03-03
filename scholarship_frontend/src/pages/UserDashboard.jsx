@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   createApplication,
   getScholarships,
@@ -16,22 +18,33 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchScholarships = async () => {
       const data = await getScholarships();
-      setScholarships(data);
+      console.log(data);
+      setScholarships(data.data);
     };
     fetchScholarships();
   }, []);
 
   useEffect(() => {
     const fetchAppliedScholarships = async () => {
-      const data = await getApplications(); 
+      const data = await getApplications();
       console.log(data);
-      
-      setAppliedScholarships(data);
+      setAppliedScholarships(data.data);
     };
     fetchAppliedScholarships();
   }, []);
 
   const handleApply = async (scholarship, transcript, recommendationLetter) => {
+    
+    const isAlreadyApplied = appliedScholarships.some(
+      (appliedScholarship) =>
+        appliedScholarship.scholarship.id === scholarship.id
+    );
+
+    if (isAlreadyApplied) {
+      toast.error("You have already applied for this scholarship.");
+      return; 
+    }
+
     const formData = new FormData();
     formData.append("scholarship", scholarship.id);
     formData.append("transcript", transcript);
@@ -40,18 +53,18 @@ const UserDashboard = () => {
 
     try {
       const res = await createApplication(formData);
-      alert("Application submitted successfully!");
+
+      toast.success("Application submitted successfully!");
       setAppliedScholarships([...appliedScholarships, res]);
     } catch (error) {
-      console.log(error);
-      alert("Failed to submit application");
+      toast.error("Failed to submit application");
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-900">
       <Sidebar />
-      <div className="flex-1 p-8">
+      <div className="pl-72 flex-1 p-8">
         <Routes>
           <Route
             path="available-scholarships"
