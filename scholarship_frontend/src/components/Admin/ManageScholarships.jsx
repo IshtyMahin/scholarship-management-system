@@ -22,11 +22,12 @@ const ManageScholarships = () => {
   const [success, setSuccess] = useState(null);
 
   useEffect(() => {
+    
     const fetchScholarships = async () => {
+      console.log("test");
       setLoading(true);
       try {
         const response = await getScholarships();
-        console.log(response);
 
         if (response?.success) {
           setScholarships(Array.isArray(response.data) ? response.data : []);
@@ -207,14 +208,14 @@ const ManageScholarships = () => {
                   <div className="flex justify-end gap-3">
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition cursor-pointer"
                     >
                       Save
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingScholarship(null)}
-                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+                      className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-600 transition"
                     >
                       Cancel
                     </button>
@@ -253,13 +254,13 @@ const ManageScholarships = () => {
               <div className="flex justify-between mt-4">
                 <button
                   onClick={() => handleEditClick(scholarship)}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-1"
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-1 cursor-pointer"
                 >
                   <Edit size={16} /> Update
                 </button>
                 <button
                   onClick={() => handleDeleteScholarship(scholarship.id)}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center gap-1"
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center gap-1 cursor-pointer"
                 >
                   <Trash2 size={16} /> Delete
                 </button>
