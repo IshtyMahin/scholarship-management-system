@@ -199,7 +199,7 @@ const ManageApplications = () => {
                     onClick={() =>
                       handleUpdateApplicationStatus(application.id, "Approved")
                     }
-                    className="bg-green-600 text-white hover:bg-green-700 transition duration-300 px-4 py-2 rounded-md text-sm"
+                    className="bg-green-600 text-white hover:bg-green-700 transition duration-300 px-4 py-2 rounded-md text-sm cursor-pointer"
                     disabled={loading}
                   >
                     Approve
@@ -208,7 +208,7 @@ const ManageApplications = () => {
                     onClick={() =>
                       handleUpdateApplicationStatus(application.id, "Rejected")
                     }
-                    className="bg-red-600 text-white hover:bg-red-700 transition duration-300 px-4 py-2 rounded-md text-sm"
+                    className="bg-red-600 text-white hover:bg-red-700 transition duration-300 px-4 py-2 rounded-md text-sm cursor-pointer"
                     disabled={loading}
                   >
                     Reject
